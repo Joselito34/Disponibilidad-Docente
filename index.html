@@ -1,0 +1,1069 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tablero de Disponibilidad — Profesores</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.31.0/tabler-icons.min.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  /* ─── DESIGN TOKENS ─────────────────────────────────────────────── */
+  :root {
+    /* Palette — deep indigo base with warm accents */
+    --ink-950: #0c0a1d;
+    --ink-900: #151230;
+    --ink-800: #1e1a45;
+    --ink-700: #2a2560;
+    --ink-600: #3d3685;
+    --ink-500: #524aab;
+    --ink-400: #7068cc;
+    --ink-300: #9d97de;
+    --ink-200: #c4c0ed;
+    --ink-100: #e0def5;
+    --ink-50:  #f0eff9;
+
+    --mint-600: #0d7358;
+    --mint-500: #10956f;
+    --mint-100: #d5f2e8;
+    --mint-50:  #edfaf4;
+
+    --ember-600: #a8421a;
+    --ember-500: #d85a30;
+    --ember-100: #fde1d4;
+    --ember-50:  #fef2ec;
+
+    --honey-600: #8a5a10;
+    --honey-500: #ba7517;
+    --honey-100: #fcecc4;
+    --honey-50:  #fef7e6;
+
+    --surface: #f6f5fc;
+    --surface-card: #ffffff;
+    --border-subtle: #e4e1f3;
+    --border-faint: #eeedfa;
+    --text-primary: #0c0a1d;
+    --text-secondary: #6b6893;
+    --text-muted: #9895b5;
+
+    /* Typography */
+    --font-body: 'DM Sans', system-ui, -apple-system, sans-serif;
+    --font-display: 'Instrument Serif', Georgia, serif;
+
+    /* Spacing scale */
+    --space-xs: 4px;
+    --space-sm: 8px;
+    --space-md: 12px;
+    --space-lg: 16px;
+    --space-xl: 24px;
+    --space-2xl: 32px;
+    --space-3xl: 48px;
+
+    /* Radii */
+    --radius-sm: 6px;
+    --radius-md: 10px;
+    --radius-lg: 14px;
+    --radius-xl: 20px;
+
+    /* Shadows */
+    --shadow-sm: 0 1px 3px rgba(12,10,29,0.04), 0 1px 2px rgba(12,10,29,0.03);
+    --shadow-md: 0 4px 12px rgba(12,10,29,0.06), 0 1px 4px rgba(12,10,29,0.04);
+    --shadow-tooltip: 0 8px 24px rgba(12,10,29,0.18), 0 2px 8px rgba(12,10,29,0.1);
+
+    /* Heatmap scale */
+    --heat-0: var(--surface);
+    --heat-1: #e8e5f6;
+    --heat-2: #d1cbf0;
+    --heat-3: #b5adea;
+    --heat-4: #9690e0;
+    --heat-5: #7068cc;
+    --heat-6: #524aab;
+
+    /* Transitions */
+    --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  body {
+    font-family: var(--font-body);
+    background: var(--surface);
+    color: var(--text-primary);
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ─── HEADER ────────────────────────────────────────────────────── */
+  .header {
+    background: var(--ink-900);
+    padding: 0 var(--space-2xl);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 56px;
+    position: relative;
+    overflow: hidden;
+  }
+  .header::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--ink-500), var(--mint-500), var(--ink-500));
+  }
+  .header-brand { display: flex; align-items: center; gap: var(--space-md); }
+  .header-brand i { color: var(--ink-300); font-size: 20px; }
+  .header-brand h1 {
+    font-family: var(--font-display);
+    font-size: 18px;
+    font-weight: 400;
+    color: #fff;
+    letter-spacing: 0.01em;
+    font-style: italic;
+  }
+  .header-meta {
+    font-size: 11px;
+    color: var(--ink-400);
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+  }
+
+  /* ─── LAYOUT ────────────────────────────────────────────────────── */
+  .main {
+    max-width: 1320px;
+    margin: 0 auto;
+    padding: var(--space-xl) var(--space-xl) var(--space-3xl);
+  }
+
+  /* ─── KPI CARDS ─────────────────────────────────────────────────── */
+  .kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--space-md);
+    margin-bottom: var(--space-xl);
+  }
+  .kpi {
+    background: var(--surface-card);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-lg);
+    padding: var(--space-lg) var(--space-xl);
+    box-shadow: var(--shadow-sm);
+    transition: box-shadow 0.2s var(--ease-out), transform 0.2s var(--ease-out);
+  }
+  .kpi:hover {
+    box-shadow: var(--shadow-md);
+    transform: translateY(-1px);
+  }
+  .kpi-label {
+    font-size: 11px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-bottom: var(--space-sm);
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    font-weight: 500;
+  }
+  .kpi-label i { font-size: 14px; color: var(--ink-400); }
+  .kpi-value {
+    font-family: var(--font-display);
+    font-size: 32px;
+    font-weight: 400;
+    color: var(--text-primary);
+    line-height: 1;
+  }
+  .kpi-value--text {
+    font-family: var(--font-body);
+    font-size: 17px;
+    font-weight: 600;
+    margin-top: var(--space-xs);
+  }
+  .kpi-sub {
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-top: var(--space-xs);
+  }
+
+  /* ─── SECTION HEADS ─────────────────────────────────────────────── */
+  .section-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: var(--space-md);
+    flex-wrap: wrap;
+    gap: var(--space-md);
+  }
+  .section-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-primary);
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    letter-spacing: 0.01em;
+  }
+  .section-title i { color: var(--ink-500); font-size: 17px; }
+  .section-controls {
+    display: flex;
+    align-items: center;
+    gap: var(--space-lg);
+  }
+
+  /* ─── FILTERS ───────────────────────────────────────────────────── */
+  .filters { display: flex; gap: var(--space-sm); align-items: center; }
+  .filter-btn {
+    font-family: var(--font-body);
+    font-size: 11px;
+    font-weight: 500;
+    padding: 5px 14px;
+    border-radius: var(--radius-xl);
+    border: 1px solid var(--border-subtle);
+    background: var(--surface-card);
+    cursor: pointer;
+    color: var(--text-secondary);
+    transition: all 0.15s var(--ease-out);
+    letter-spacing: 0.02em;
+  }
+  .filter-btn:hover { border-color: var(--ink-300); color: var(--ink-600); }
+  .filter-btn[aria-pressed="true"] {
+    background: var(--ink-700);
+    color: #fff;
+    border-color: var(--ink-700);
+  }
+
+  /* ─── LEGEND ────────────────────────────────────────────────────── */
+  .legend {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    font-size: 10px;
+    color: var(--text-muted);
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+  }
+  .legend-item { display: flex; align-items: center; gap: 3px; }
+  .legend-swatch {
+    width: 12px;
+    height: 12px;
+    border-radius: 3px;
+    flex-shrink: 0;
+  }
+
+  /* ─── HEATMAP TABLE ─────────────────────────────────────────────── */
+  .heatmap-wrap {
+    background: var(--surface-card);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-lg);
+    overflow-x: auto;
+    box-shadow: var(--shadow-sm);
+    -webkit-overflow-scrolling: touch;
+  }
+  .heatmap-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+    min-width: 680px;
+  }
+  .heatmap-table th {
+    background: var(--ink-50);
+    color: var(--ink-700);
+    font-weight: 600;
+    font-size: 11px;
+    padding: var(--space-md) var(--space-sm);
+    text-align: center;
+    border: 1px solid var(--border-faint);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    position: sticky;
+    top: 0;
+    z-index: 2;
+  }
+  .heatmap-table th.col-module {
+    text-align: left;
+    min-width: 140px;
+    padding-left: var(--space-lg);
+  }
+  .heatmap-table td {
+    padding: 0;
+    border: 1px solid var(--border-faint);
+  }
+  .heatmap-table td.cell-module {
+    padding: var(--space-sm) var(--space-sm) var(--space-sm) var(--space-lg);
+    background: var(--surface-card);
+  }
+  .mod-name { font-weight: 600; font-size: 12px; color: var(--text-primary); }
+  .mod-time { font-size: 10px; color: var(--text-muted); margin-top: 1px; }
+
+  /* ─── HEAT CELLS ────────────────────────────────────────────────── */
+  .heat-cell {
+    width: 100%;
+    height: 52px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    cursor: default;
+    transition: filter 0.12s var(--ease-out);
+    position: relative;
+  }
+  .heat-cell:hover { filter: brightness(0.93); }
+  .heat-cell .count { font-size: 17px; font-weight: 600; line-height: 1; }
+  .heat-cell .pct { font-size: 10px; margin-top: 2px; opacity: 0.7; font-weight: 500; }
+
+  /* Heat scale classes */
+  .h0 { background: var(--heat-0); color: var(--text-muted); }
+  .h1 { background: var(--heat-1); color: var(--ink-500); }
+  .h2 { background: var(--heat-2); color: var(--ink-600); }
+  .h3 { background: var(--heat-3); color: var(--ink-700); }
+  .h4 { background: var(--heat-4); color: var(--ink-900); }
+  .h5 { background: var(--heat-5); color: #fff; }
+  .h6 { background: var(--heat-6); color: #fff; }
+
+  /* Totals row */
+  .row-totals td {
+    background: var(--ink-50);
+    font-weight: 600;
+    font-size: 12px;
+  }
+  .row-totals td.cell-total-label {
+    color: var(--ink-700);
+    padding-left: var(--space-lg);
+    text-transform: uppercase;
+    font-size: 11px;
+    letter-spacing: 0.04em;
+  }
+  .row-totals td.cell-total-val {
+    text-align: center;
+    color: var(--ink-600);
+    padding: var(--space-sm);
+  }
+  .cell-mod-total {
+    text-align: center;
+    padding: var(--space-xs) var(--space-sm);
+    background: var(--surface-card);
+  }
+  .cell-mod-total-count { font-weight: 600; font-size: 13px; color: var(--ink-600); }
+  .cell-mod-total-pct { font-size: 10px; color: var(--text-muted); }
+  .cell-grand-total { color: var(--ink-800) !important; font-weight: 700 !important; }
+
+  /* ─── BOTTOM CARDS ──────────────────────────────────────────────── */
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-md);
+    margin-top: var(--space-xl);
+  }
+  .card {
+    background: var(--surface-card);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-lg);
+    padding: var(--space-xl);
+    box-shadow: var(--shadow-sm);
+  }
+  .card-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: var(--space-lg);
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    letter-spacing: 0.01em;
+  }
+  .card-title i { color: var(--ink-500); font-size: 16px; }
+
+  /* Professor rows */
+  .prof-row {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+    padding: var(--space-sm) 0;
+    border-bottom: 1px solid var(--border-faint);
+  }
+  .prof-row:last-child { border-bottom: none; }
+  .prof-avatar {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: var(--ink-50);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--ink-500);
+    flex-shrink: 0;
+    letter-spacing: -0.02em;
+  }
+  .prof-name { font-size: 12px; font-weight: 600; color: var(--text-primary); }
+  .prof-area { font-size: 10px; color: var(--text-muted); margin-top: 1px; }
+  .prof-slots { margin-left: auto; }
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    font-size: 10px;
+    font-weight: 600;
+    padding: 3px 10px;
+    border-radius: var(--radius-xl);
+    letter-spacing: 0.02em;
+  }
+  .badge-high { background: var(--mint-50); color: var(--mint-600); }
+  .badge-med  { background: var(--ink-50); color: var(--ink-600); }
+  .badge-low  { background: var(--ember-50); color: var(--ember-600); }
+
+  /* Bar chart */
+  .bar-chart { margin-top: var(--space-sm); }
+  .bar-row {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+    margin-bottom: var(--space-md);
+    font-size: 12px;
+  }
+  .bar-day {
+    width: 32px;
+    color: var(--text-muted);
+    flex-shrink: 0;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+  }
+  .bar-track {
+    flex: 1;
+    height: 18px;
+    background: var(--ink-50);
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+  }
+  .bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--ink-500), var(--ink-600));
+    border-radius: var(--radius-sm);
+    transition: width 0.4s var(--ease-out);
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding-right: 6px;
+  }
+  .bar-fill span { font-size: 10px; color: #fff; font-weight: 600; }
+  .bar-fill--inactive {
+    background: var(--ink-100);
+    opacity: 0.5;
+  }
+  .bar-val {
+    width: 28px;
+    text-align: right;
+    font-weight: 600;
+    color: var(--ink-700);
+    font-size: 12px;
+  }
+  .bar-val--inactive { color: var(--text-muted); opacity: 0.5; }
+
+  /* ─── TOOLTIP ───────────────────────────────────────────────────── */
+  .tooltip {
+    position: fixed;
+    background: var(--ink-900);
+    color: #fff;
+    border-radius: var(--radius-md);
+    padding: var(--space-sm) var(--space-lg);
+    font-size: 12px;
+    pointer-events: none;
+    z-index: 999;
+    display: none;
+    line-height: 1.7;
+    box-shadow: var(--shadow-tooltip);
+    max-width: 240px;
+  }
+  .tooltip b { color: var(--ink-200); font-weight: 500; }
+
+  /* ─── RESPONSIVE ────────────────────────────────────────────────── */
+  @media (max-width: 900px) {
+    .kpi-grid { grid-template-columns: 1fr 1fr; }
+    .two-col { grid-template-columns: 1fr; }
+    .main { padding: var(--space-lg) var(--space-lg) var(--space-2xl); }
+    .header { padding: 0 var(--space-lg); }
+  }
+  @media (max-width: 500px) {
+    .kpi-grid { grid-template-columns: 1fr; }
+    .section-head { flex-direction: column; align-items: flex-start; }
+    .section-controls { flex-wrap: wrap; }
+  }
+</style>
+</head>
+<body>
+
+<div class="tooltip" id="tooltip" role="tooltip" aria-hidden="true"></div>
+
+<header class="header" role="banner">
+  <div class="header-brand">
+    <i class="ti ti-layout-dashboard" aria-hidden="true"></i>
+    <h1>Tablero de disponibilidad — Profesores</h1>
+  </div>
+  <span class="header-meta" id="update-time"></span>
+</header>
+
+<main class="main" role="main">
+
+  <!-- KPIs -->
+  <div class="kpi-grid" aria-label="Indicadores clave">
+    <div class="kpi">
+      <div class="kpi-label"><i class="ti ti-users" aria-hidden="true"></i> Profesores</div>
+      <div class="kpi-value" id="kpi-total">0</div>
+      <div class="kpi-sub">respuestas registradas</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label"><i class="ti ti-calendar-check" aria-hidden="true"></i> Módulo top</div>
+      <div class="kpi-value kpi-value--text" id="kpi-top-mod">—</div>
+      <div class="kpi-sub" id="kpi-top-mod-sub">—</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label"><i class="ti ti-sun" aria-hidden="true"></i> Día top</div>
+      <div class="kpi-value kpi-value--text" id="kpi-top-day">—</div>
+      <div class="kpi-sub" id="kpi-top-day-sub">—</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label"><i class="ti ti-clock" aria-hidden="true"></i> Slots totales</div>
+      <div class="kpi-value" id="kpi-slots">0</div>
+      <div class="kpi-sub">en toda la semana</div>
+    </div>
+  </div>
+
+  <!-- HEATMAP -->
+  <div class="section-head">
+    <div class="section-title">
+      <i class="ti ti-table-heat" aria-hidden="true"></i>
+      Mapa de calor — disponibilidad por módulo y día
+    </div>
+    <div class="section-controls">
+      <div class="legend" aria-label="Leyenda del mapa de calor">
+        <span class="legend-item"><span class="legend-swatch" style="background:var(--heat-0);border:1px solid var(--border-subtle);"></span> 0</span>
+        <span class="legend-item"><span class="legend-swatch" style="background:var(--heat-2);"></span> bajo</span>
+        <span class="legend-item"><span class="legend-swatch" style="background:var(--heat-4);"></span> medio</span>
+        <span class="legend-item"><span class="legend-swatch" style="background:var(--heat-6);"></span> alto</span>
+      </div>
+      <div class="filters" id="day-filters" role="group" aria-label="Filtros por día"></div>
+    </div>
+  </div>
+
+  <div class="heatmap-wrap">
+    <table class="heatmap-table" id="heatmap-table" aria-label="Disponibilidad por módulo y día">
+      <thead id="heatmap-head"></thead>
+      <tbody id="heatmap-body"></tbody>
+      <tfoot id="heatmap-foot"></tfoot>
+    </table>
+  </div>
+
+  <!-- BOTTOM CARDS -->
+  <div class="two-col">
+    <div class="card">
+      <div class="card-title"><i class="ti ti-award" aria-hidden="true"></i> Mayor disponibilidad</div>
+      <div id="top-profs"></div>
+    </div>
+    <div class="card">
+      <div class="card-title"><i class="ti ti-chart-bar" aria-hidden="true"></i> Disponibilidad total por día</div>
+      <div class="bar-chart" id="day-bars"></div>
+    </div>
+  </div>
+
+</main>
+
+<script>
+/**
+ * ═══════════════════════════════════════════════════════════════════
+ * TABLERO DE DISPONIBILIDAD — PROFESORES
+ * ═══════════════════════════════════════════════════════════════════
+ *
+ * Dashboard interactivo que visualiza la disponibilidad horaria
+ * de profesores en formato heatmap, con KPIs, ranking y gráfico
+ * de distribución por día.
+ *
+ * ARQUITECTURA:
+ *   1. CONFIG   – constantes y umbrales configurables
+ *   2. DATA     – fuente de datos (reemplazar en producción)
+ *   3. ENGINE   – funciones puras de cálculo
+ *   4. UI       – renderizado y manejo de eventos
+ *
+ * INTEGRACIÓN CON DATOS REALES:
+ *   Reemplazar la sección DATA con un fetch a tu API/JSON:
+ *     const PROFESORES = await fetch('/api/disponibilidad').then(r => r.json());
+ *   El formato esperado es:
+ *     [{ nombre: string, asignatura: string, disponibilidad: { [día]: boolean[] } }]
+ */
+
+// ════════════════════════════════════════════════════════════════════
+// 1. CONFIG — Parámetros configurables
+// ════════════════════════════════════════════════════════════════════
+
+const CONFIG = {
+  /** Días de la semana a mostrar */
+  dias: ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'],
+
+  /** Definición de módulos horarios */
+  modulos: [
+    { id: 'M1',  nombre: 'Módulo 1',  hora: '08:30 – 09:40' },
+    { id: 'M2',  nombre: 'Módulo 2',  hora: '10:00 – 11:10' },
+    { id: 'M3',  nombre: 'Módulo 3',  hora: '11:30 – 12:40' },
+    { id: 'M4A', nombre: 'Módulo 4A', hora: '13:00 – 14:10' },
+    { id: 'M4B', nombre: 'Módulo 4B', hora: '13:30 – 14:40' },
+    { id: 'M5',  nombre: 'Módulo 5',  hora: '15:00 – 16:10' },
+    { id: 'M6',  nombre: 'Módulo 6',  hora: '16:30 – 17:40' },
+    { id: 'M7',  nombre: 'Módulo 7',  hora: '18:00 – 19:10' },
+    { id: 'M8',  nombre: 'Módulo 8',  hora: '19:30 – 20:40' },
+  ],
+
+  /** Umbrales del heatmap (ratio val/max → clase CSS) */
+  heatThresholds: [
+    { max: 0,    cls: 'h0' },
+    { max: 0.12, cls: 'h1' },
+    { max: 0.25, cls: 'h2' },
+    { max: 0.40, cls: 'h3' },
+    { max: 0.60, cls: 'h4' },
+    { max: 0.80, cls: 'h5' },
+  ],
+  heatDefault: 'h6',
+
+  /** Umbrales de badge para ranking de profesores (% de slots) */
+  badgeThresholds: {
+    high: { min: 60, cls: 'badge-high', label: 'Alta' },
+    med:  { min: 30, cls: 'badge-med',  label: 'Media' },
+    low:  { min: 0,  cls: 'badge-low',  label: 'Baja' },
+  },
+
+  /** Cantidad de profesores a mostrar en el ranking */
+  topProfCount: 8,
+};
+
+
+// ════════════════════════════════════════════════════════════════════
+// 2. DATA — Fuente de datos
+// ════════════════════════════════════════════════════════════════════
+// En producción: reemplazar todo este bloque con fetch a API/JSON.
+// El formato final de PROFESORES debe ser:
+// [{ nombre: string, asignatura: string, disponibilidad: { Lunes: [bool x9], ... } }]
+
+const PROFESORES_RAW = [
+  { nombre:'Ana González',     asignatura:'Matemáticas',   patron:[0.8,0.7,0.6,0.1,0.1,0] },
+  { nombre:'Carlos Rojas',     asignatura:'Física',        patron:[0.7,0.8,0.7,0.5,0.2,0.1] },
+  { nombre:'María Pérez',      asignatura:'Inglés',        patron:[0.3,0.3,0.3,0.8,0.8,0.2] },
+  { nombre:'Luis Herrera',     asignatura:'Historia',      patron:[0.5,0.5,0.5,0.5,0.5,0] },
+  { nombre:'Sofía Muñoz',      asignatura:'Biología',      patron:[0.9,0.9,0.1,0.1,0.8,0] },
+  { nombre:'Diego Castro',     asignatura:'Química',       patron:[0.1,0.1,0.9,0.9,0.1,0.5] },
+  { nombre:'Valentina Silva',  asignatura:'Lenguaje',      patron:[0.6,0.2,0.6,0.2,0.6,0] },
+  { nombre:'Matías Fuentes',   asignatura:'Artes',         patron:[0.1,0.5,0.5,0.5,0.1,0.8] },
+  { nombre:'Camila Torres',    asignatura:'Música',        patron:[0.8,0.1,0.8,0.1,0.8,0] },
+  { nombre:'Sebastián Mora',   asignatura:'Ed. Física',    patron:[0.7,0.7,0.7,0.7,0.7,0.3] },
+  { nombre:'Isadora Vega',     asignatura:'Filosofía',     patron:[0.3,0.8,0.3,0.8,0.3,0] },
+  { nombre:'Rodrigo Pinto',    asignatura:'Matemáticas',   patron:[0.9,0.5,0.9,0.5,0.9,0] },
+  { nombre:'Gabriela Ríos',    asignatura:'Inglés',        patron:[0.5,0.9,0.5,0.9,0.5,0.1] },
+  { nombre:'Felipe Cárdenas',  asignatura:'Física',        patron:[0.2,0.2,0.8,0.8,0.2,0.6] },
+  { nombre:'Natalia Espinoza', asignatura:'Biología',      patron:[0.7,0.3,0.7,0.3,0.7,0] },
+  { nombre:'Andrés Salinas',   asignatura:'Historia',      patron:[0.4,0.6,0.4,0.6,0.4,0.2] },
+  { nombre:'Josefina Vargas',  asignatura:'Química',       patron:[0.8,0.8,0.2,0.2,0.8,0] },
+  { nombre:'Tomás Contreras',  asignatura:'Lenguaje',      patron:[0.3,0.7,0.7,0.3,0.3,0.4] },
+  { nombre:'Daniela Araya',    asignatura:'Artes',         patron:[0.6,0.6,0.6,0.6,0.1,0.1] },
+  { nombre:'Pablo Mendoza',    asignatura:'Ed. Física',    patron:[0.9,0.1,0.9,0.1,0.9,0.5] },
+  { nombre:'Constanza Leal',   asignatura:'Música',        patron:[0.1,0.8,0.1,0.8,0.1,0.7] },
+  { nombre:'Ignacio Ramos',    asignatura:'Filosofía',     patron:[0.5,0.5,0.5,0.5,0.5,0.3] },
+  { nombre:'Javiera Ortega',   asignatura:'Matemáticas',   patron:[0.7,0.3,0.3,0.7,0.7,0] },
+  { nombre:'Maximiliano Soto', asignatura:'Física',        patron:[0.6,0.6,0.4,0.4,0.6,0.1] },
+  { nombre:'Catalina Bravo',   asignatura:'Inglés',        patron:[0.2,0.9,0.2,0.9,0.2,0] },
+  { nombre:'Emilio Navarrete', asignatura:'Historia',      patron:[0.8,0.4,0.8,0.4,0.8,0.2] },
+  { nombre:'Pilar Gutiérrez',  asignatura:'Biología',      patron:[0.5,0.7,0.5,0.7,0.5,0] },
+  { nombre:'Hernán Zamora',    asignatura:'Química',       patron:[0.9,0.9,0.9,0.1,0.1,0.3] },
+  { nombre:'Laura Ibáñez',     asignatura:'Lenguaje',      patron:[0.4,0.4,0.6,0.6,0.4,0] },
+  { nombre:'Simón Aguilar',    asignatura:'Artes',         patron:[0.1,0.1,0.9,0.9,0.1,0.6] },
+  { nombre:'Verónica Moya',    asignatura:'Música',        patron:[0.7,0.5,0.3,0.5,0.7,0.4] },
+  { nombre:'Cristóbal Reyes',  asignatura:'Ed. Física',    patron:[0.6,0.6,0.6,0.2,0.6,0.8] },
+  { nombre:'Florencia Acuña',  asignatura:'Filosofía',     patron:[0.3,0.8,0.5,0.8,0.3,0] },
+  { nombre:'Nicolás Trujillo', asignatura:'Matemáticas',   patron:[0.8,0.2,0.8,0.2,0.8,0] },
+  { nombre:'Amanda Cifuentes', asignatura:'Inglés',        patron:[0.5,0.5,0.5,0.5,0.5,0.2] },
+];
+
+/**
+ * PRNG encapsulado — Linear Congruential Generator.
+ * No modifica Math.random global.
+ * @param {number} seed - Semilla para reproducibilidad
+ * @returns {function(): number} Función que retorna pseudo-random [0, 1)
+ */
+function createPRNG(seed) {
+  let state = seed | 0;
+  return function () {
+    state = (state * 1664525 + 1013904223) >>> 0;
+    return state / 4294967296;
+  };
+}
+
+/**
+ * Genera la disponibilidad semanal de un profesor.
+ * @param {number[]} patron - Probabilidad base por día [0..1]
+ * @param {function} random - Función PRNG
+ * @returns {Object.<string, boolean[]>} Mapa día → array de booleanos por módulo
+ */
+function generarDisponibilidad(patron, random) {
+  const disp = {};
+  CONFIG.dias.forEach((dia, di) => {
+    const p = patron[di] || 0;
+    disp[dia] = CONFIG.modulos.map((_, mi) => {
+      // Sesgo horario: mañana +10%, tarde -10%, noche -20%
+      const factor = mi < 3 ? 1.1 : mi < 6 ? 0.9 : 0.8;
+      return random() < Math.min(p * factor, 1);
+    });
+  });
+  return disp;
+}
+
+const prng = createPRNG(42);
+const PROFESORES = PROFESORES_RAW.map(p => ({
+  nombre: p.nombre,
+  asignatura: p.asignatura,
+  disponibilidad: generarDisponibilidad(p.patron, prng),
+}));
+
+
+// ════════════════════════════════════════════════════════════════════
+// 3. ENGINE — Funciones puras de cálculo
+// ════════════════════════════════════════════════════════════════════
+
+/**
+ * Sanitiza un string para inserción segura en HTML.
+ * Previene XSS al escapar caracteres especiales.
+ * @param {string} str
+ * @returns {string}
+ */
+function escapeHTML(str) {
+  const div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
+}
+
+/**
+ * Calcula conteos de disponibilidad por día y módulo.
+ * @param {Array} profesores - Lista de profesores
+ * @param {string[]} diasFiltro - Días activos
+ * @returns {{ counts: Object, totalesDia: Object }}
+ */
+function calcCounts(profesores, diasFiltro) {
+  const counts = {};
+  const totalesDia = {};
+
+  for (const dia of diasFiltro) {
+    totalesDia[dia] = 0;
+    counts[dia] = new Array(CONFIG.modulos.length).fill(0);
+  }
+
+  for (const prof of profesores) {
+    for (const dia of diasFiltro) {
+      const disponibilidad = prof.disponibilidad[dia];
+      if (!disponibilidad) continue;
+      for (let mi = 0; mi < disponibilidad.length; mi++) {
+        if (disponibilidad[mi]) {
+          counts[dia][mi]++;
+          totalesDia[dia]++;
+        }
+      }
+    }
+  }
+
+  return { counts, totalesDia };
+}
+
+/**
+ * Calcula el total por módulo sumando todos los días.
+ * @param {Object} counts - Conteos por día
+ * @param {string[]} diasFiltro - Días activos
+ * @returns {number[]} Total por índice de módulo
+ */
+function totalPorModulo(counts, diasFiltro) {
+  return CONFIG.modulos.map((_, mi) =>
+    diasFiltro.reduce((sum, dia) => sum + (counts[dia]?.[mi] || 0), 0)
+  );
+}
+
+/**
+ * Determina la clase CSS de calor para una celda.
+ * @param {number} val - Valor de la celda
+ * @param {number} max - Máximo del dataset
+ * @returns {string} Clase CSS (h0..h6)
+ */
+function heatClass(val, max) {
+  if (max === 0 || val === 0) return 'h0';
+  const ratio = val / max;
+  for (const t of CONFIG.heatThresholds) {
+    if (ratio < t.max || t.max === 0 && val === 0) return t.cls;
+  }
+  // Recorrer umbrales ordenados
+  for (let i = 1; i < CONFIG.heatThresholds.length; i++) {
+    if (ratio < CONFIG.heatThresholds[i].max) return CONFIG.heatThresholds[i].cls;
+  }
+  return CONFIG.heatDefault;
+}
+
+/**
+ * Determina la clase y etiqueta del badge de un profesor.
+ * @param {number} pct - Porcentaje de disponibilidad
+ * @returns {{ cls: string, label: string }}
+ */
+function badgeInfo(pct) {
+  const { high, med, low } = CONFIG.badgeThresholds;
+  if (pct > high.min) return high;
+  if (pct > med.min)  return med;
+  return low;
+}
+
+/**
+ * Obtiene las iniciales de un nombre (máximo 2 letras).
+ * @param {string} nombre
+ * @returns {string}
+ */
+function getInitials(nombre) {
+  return nombre.split(' ').slice(0, 2).map(w => w[0] || '').join('');
+}
+
+
+// ════════════════════════════════════════════════════════════════════
+// 4. UI — Renderizado y eventos
+// ════════════════════════════════════════════════════════════════════
+
+/** Estado global mutable */
+let activeDias = [...CONFIG.dias];
+
+/** Refs del DOM (cacheadas una sola vez) */
+const DOM = {
+  tooltip:     document.getElementById('tooltip'),
+  kpiTotal:    document.getElementById('kpi-total'),
+  kpiSlots:    document.getElementById('kpi-slots'),
+  kpiTopMod:   document.getElementById('kpi-top-mod'),
+  kpiTopModSub:document.getElementById('kpi-top-mod-sub'),
+  kpiTopDay:   document.getElementById('kpi-top-day'),
+  kpiTopDaySub:document.getElementById('kpi-top-day-sub'),
+  updateTime:  document.getElementById('update-time'),
+  heatHead:    document.getElementById('heatmap-head'),
+  heatBody:    document.getElementById('heatmap-body'),
+  heatFoot:    document.getElementById('heatmap-foot'),
+  topProfs:    document.getElementById('top-profs'),
+  dayBars:     document.getElementById('day-bars'),
+};
+
+// ── Render: KPIs ────────────────────────────────────────────────────
+function renderKPIs(n, totalSlots, modTotales, totalesDia) {
+  DOM.kpiTotal.textContent = n;
+  DOM.kpiSlots.textContent = totalSlots.toLocaleString('es-CL');
+
+  // Módulo top
+  const topModIdx = modTotales.indexOf(Math.max(...modTotales));
+  DOM.kpiTopMod.textContent = CONFIG.modulos[topModIdx].nombre;
+  DOM.kpiTopModSub.textContent = `${modTotales[topModIdx]} slots disponibles`;
+
+  // Día top
+  if (activeDias.length > 0) {
+    const topDia = activeDias.reduce((a, b) => totalesDia[a] >= totalesDia[b] ? a : b);
+    DOM.kpiTopDay.textContent = topDia;
+    DOM.kpiTopDaySub.textContent = `${totalesDia[topDia]} slots ese día`;
+  } else {
+    DOM.kpiTopDay.textContent = '—';
+    DOM.kpiTopDaySub.textContent = '—';
+  }
+
+  // Timestamp
+  DOM.updateTime.textContent =
+    'Datos de ejemplo · ' + new Date().toLocaleDateString('es-CL', {
+      day: '2-digit', month: 'short', year: 'numeric'
+    });
+}
+
+// ── Render: Heatmap ─────────────────────────────────────────────────
+function renderHeatmap(n, counts, maxCell, modTotales, totalesDia, totalSlots) {
+  // Header
+  DOM.heatHead.innerHTML =
+    '<tr><th class="col-module">Módulo</th>' +
+    activeDias.map(d => `<th>${escapeHTML(d)}</th>`).join('') +
+    '<th>Total</th></tr>';
+
+  // Body
+  DOM.heatBody.innerHTML = CONFIG.modulos.map((mod, mi) => {
+    const cells = activeDias.map(dia => {
+      const val = counts[dia][mi];
+      const cls = heatClass(val, maxCell);
+      const pct = n > 0 ? Math.round(val / n * 100) : 0;
+      return `<td>
+        <div class="heat-cell ${cls}"
+          data-dia="${escapeHTML(dia)}"
+          data-mod="${escapeHTML(mod.nombre)}"
+          data-val="${val}"
+          data-pct="${pct}"
+          data-total="${n}"
+          role="gridcell"
+          aria-label="${val} profesores disponibles ${dia} en ${mod.nombre} (${pct}%)">
+          <span class="count">${val}</span>
+          <span class="pct">${pct}%</span>
+        </div>
+      </td>`;
+    }).join('');
+
+    const tot = modTotales[mi];
+    const totPct = activeDias.length > 0 && n > 0
+      ? Math.round(tot / (n * activeDias.length) * 100)
+      : 0;
+
+    return `<tr>
+      <td class="cell-module">
+        <div class="mod-name">${escapeHTML(mod.nombre)}</div>
+        <div class="mod-time">${escapeHTML(mod.hora)}</div>
+      </td>
+      ${cells}
+      <td class="cell-mod-total">
+        <div class="cell-mod-total-count">${tot}</div>
+        <div class="cell-mod-total-pct">${totPct}%</div>
+      </td>
+    </tr>`;
+  }).join('');
+
+  // Footer
+  DOM.heatFoot.innerHTML =
+    '<tr class="row-totals"><td class="cell-total-label">Total por día</td>' +
+    activeDias.map(d => `<td class="cell-total-val">${totalesDia[d]}</td>`).join('') +
+    `<td class="cell-total-val cell-grand-total">${totalSlots}</td></tr>`;
+}
+
+// ── Render: Top Profesores ──────────────────────────────────────────
+function renderTopProfesores(n) {
+  const maxSlots = activeDias.length * CONFIG.modulos.length;
+
+  const ranked = PROFESORES.map(p => {
+    const slots = activeDias.reduce((sum, dia) =>
+      sum + (p.disponibilidad[dia] || []).filter(Boolean).length, 0);
+    return { ...p, slots };
+  }).sort((a, b) => b.slots - a.slots).slice(0, CONFIG.topProfCount);
+
+  DOM.topProfs.innerHTML = ranked.map(p => {
+    const pct = maxSlots > 0 ? Math.round(p.slots / maxSlots * 100) : 0;
+    const badge = badgeInfo(pct);
+    const initials = escapeHTML(getInitials(p.nombre));
+    return `<div class="prof-row">
+      <div class="prof-avatar">${initials}</div>
+      <div>
+        <div class="prof-name">${escapeHTML(p.nombre)}</div>
+        <div class="prof-area">${escapeHTML(p.asignatura)}</div>
+      </div>
+      <div class="prof-slots">
+        <span class="badge ${badge.cls}">${p.slots} slots · ${badge.label}</span>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ── Render: Barras por Día ──────────────────────────────────────────
+function renderDayBars(totalesDia) {
+  const maxDay = Math.max(...CONFIG.dias.map(d => totalesDia[d] || 0), 1);
+
+  DOM.dayBars.innerHTML = CONFIG.dias.map(dia => {
+    const val = totalesDia[dia] || 0;
+    const isActive = activeDias.includes(dia);
+    const w = Math.round(val / maxDay * 100);
+    const fillCls = isActive ? '' : 'bar-fill--inactive';
+    const valCls = isActive ? '' : 'bar-val--inactive';
+
+    return `<div class="bar-row">
+      <div class="bar-day">${escapeHTML(dia.slice(0, 3))}</div>
+      <div class="bar-track">
+        <div class="bar-fill ${fillCls}" style="width:${w}%">
+          ${w > 15 ? `<span>${val}</span>` : ''}
+        </div>
+      </div>
+      <div class="bar-val ${valCls}">${val}</div>
+    </div>`;
+  }).join('');
+}
+
+// ── Render Principal ────────────────────────────────────────────────
+function render() {
+  const n = PROFESORES.length;
+  const { counts, totalesDia } = calcCounts(PROFESORES, activeDias);
+  const maxCell = Math.max(...activeDias.flatMap(d => counts[d]), 0);
+  const modTotales = totalPorModulo(counts, activeDias);
+  const totalSlots = Object.values(totalesDia).reduce((a, b) => a + b, 0);
+
+  renderKPIs(n, totalSlots, modTotales, totalesDia);
+  renderHeatmap(n, counts, maxCell, modTotales, totalesDia, totalSlots);
+  renderTopProfesores(n);
+  renderDayBars(totalesDia);
+}
+
+
+// ── Tooltip: delegación de eventos (una sola vez) ───────────────────
+DOM.heatBody.addEventListener('mouseenter', function (e) {
+  const cell = e.target.closest('.heat-cell');
+  if (!cell) return;
+
+  const { dia, mod, val, pct, total } = cell.dataset;
+  DOM.tooltip.innerHTML =
+    `<b>${escapeHTML(dia)} · ${escapeHTML(mod)}</b><br>` +
+    `${val} profesores disponibles<br>` +
+    `${pct}% del total (${total})`;
+  DOM.tooltip.style.display = 'block';
+  DOM.tooltip.setAttribute('aria-hidden', 'false');
+
+  const rect = cell.getBoundingClientRect();
+  const ttWidth = DOM.tooltip.offsetWidth;
+  const ttHeight = DOM.tooltip.offsetHeight;
+
+  // Posicionamiento: fixed relativo al viewport, sin scrollY
+  let left = rect.left + rect.width / 2 - ttWidth / 2;
+  let top = rect.top - ttHeight - 8;
+
+  // Clamp horizontal
+  left = Math.max(8, Math.min(left, window.innerWidth - ttWidth - 8));
+  // Flip vertical si no cabe arriba
+  if (top < 8) top = rect.bottom + 8;
+
+  DOM.tooltip.style.left = left + 'px';
+  DOM.tooltip.style.top = top + 'px';
+}, true); // useCapture para mouseenter delegation
+
+DOM.heatBody.addEventListener('mouseleave', function (e) {
+  const cell = e.target.closest('.heat-cell');
+  if (!cell) return;
+  DOM.tooltip.style.display = 'none';
+  DOM.tooltip.setAttribute('aria-hidden', 'true');
+}, true);
+
+
+// ── Filtros de Día ──────────────────────────────────────────────────
+const filtersEl = document.getElementById('day-filters');
+
+CONFIG.dias.forEach(dia => {
+  const btn = document.createElement('button');
+  btn.className = 'filter-btn';
+  btn.textContent = dia.slice(0, 3);
+  btn.setAttribute('aria-pressed', 'true');
+  btn.setAttribute('aria-label', `Filtrar ${dia}`);
+
+  btn.addEventListener('click', () => {
+    const isActive = activeDias.includes(dia);
+
+    if (isActive) {
+      if (activeDias.length === 1) return; // Impedir deseleccionar todos
+      activeDias = activeDias.filter(d => d !== dia);
+      btn.setAttribute('aria-pressed', 'false');
+    } else {
+      activeDias.push(dia);
+      activeDias.sort((a, b) => CONFIG.dias.indexOf(a) - CONFIG.dias.indexOf(b));
+      btn.setAttribute('aria-pressed', 'true');
+    }
+
+    render();
+  });
+
+  filtersEl.appendChild(btn);
+});
+
+
+// ── Init ────────────────────────────────────────────────────────────
+render();
+
+</script>
+</body>
+</html>

@@ -1,0 +1,725 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Disponibilidad Docente — Formulario</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --ink-950: #0c0a1d;
+    --ink-900: #151230;
+    --ink-700: #2a2560;
+    --ink-600: #3d3685;
+    --ink-500: #524aab;
+    --ink-400: #7068cc;
+    --ink-300: #9d97de;
+    --ink-200: #c4c0ed;
+    --ink-100: #e0def5;
+    --ink-50:  #f0eff9;
+
+    --mint-600: #0d7358;
+    --mint-500: #10956f;
+    --mint-100: #d5f2e8;
+    --mint-50:  #edfaf4;
+
+    --ember-600: #a8421a;
+    --ember-100: #fde1d4;
+    --ember-50:  #fef2ec;
+
+    --surface: #f6f5fc;
+    --surface-card: #ffffff;
+    --border-subtle: #e4e1f3;
+    --border-faint: #eeedfa;
+    --text-primary: #0c0a1d;
+    --text-secondary: #6b6893;
+    --text-muted: #9895b5;
+
+    --font-body: 'DM Sans', system-ui, sans-serif;
+    --font-display: 'Instrument Serif', Georgia, serif;
+
+    --radius-sm: 6px;
+    --radius-md: 10px;
+    --radius-lg: 14px;
+
+    --shadow-sm: 0 1px 3px rgba(12,10,29,0.04);
+    --shadow-md: 0 4px 12px rgba(12,10,29,0.06), 0 1px 4px rgba(12,10,29,0.04);
+
+    --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  body {
+    font-family: var(--font-body);
+    background: var(--surface);
+    color: var(--text-primary);
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ─── HEADER ──────────────────────────────── */
+  .header {
+    background: var(--ink-900);
+    padding: 0 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 56px;
+    position: relative;
+  }
+  .header::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--ink-500), var(--mint-500), var(--ink-500));
+  }
+  .header h1 {
+    font-family: var(--font-display);
+    font-size: 18px;
+    font-weight: 400;
+    color: #fff;
+    font-style: italic;
+  }
+  .header-tag {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--ink-400);
+    background: rgba(255,255,255,0.06);
+    padding: 3px 10px;
+    border-radius: 20px;
+  }
+
+  /* ─── CONTAINER ───────────────────────────── */
+  .container {
+    max-width: 780px;
+    margin: 0 auto;
+    padding: 32px 20px 64px;
+  }
+
+  .intro {
+    margin-bottom: 32px;
+  }
+  .intro h2 {
+    font-family: var(--font-display);
+    font-size: 26px;
+    font-weight: 400;
+    color: var(--text-primary);
+    margin-bottom: 8px;
+    font-style: italic;
+  }
+  .intro p {
+    font-size: 14px;
+    color: var(--text-secondary);
+    line-height: 1.6;
+    max-width: 560px;
+  }
+
+  /* ─── FORM FIELDS ─────────────────────────── */
+  .field-group {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 28px;
+  }
+  .field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .field label {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  .field label .req { color: var(--ember-600); }
+  .field input, .field select {
+    font-family: var(--font-body);
+    font-size: 14px;
+    padding: 10px 14px;
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-md);
+    background: var(--surface-card);
+    color: var(--text-primary);
+    transition: border-color 0.15s, box-shadow 0.15s;
+    outline: none;
+  }
+  .field input:focus, .field select:focus {
+    border-color: var(--ink-400);
+    box-shadow: 0 0 0 3px rgba(112,104,204,0.12);
+  }
+  .field input.invalid, .field select.invalid {
+    border-color: var(--ember-600);
+    box-shadow: 0 0 0 3px rgba(168,66,26,0.1);
+  }
+
+  /* ─── AVAILABILITY GRID ───────────────────── */
+  .grid-section {
+    margin-bottom: 32px;
+  }
+  .grid-section-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 6px;
+  }
+  .grid-section-desc {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-bottom: 16px;
+  }
+
+  .avail-grid {
+    background: var(--surface-card);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-lg);
+    overflow-x: auto;
+    box-shadow: var(--shadow-sm);
+    -webkit-overflow-scrolling: touch;
+  }
+  .avail-table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 620px;
+  }
+  .avail-table th {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    padding: 10px 6px;
+    text-align: center;
+    background: var(--ink-50);
+    color: var(--ink-700);
+    border: 1px solid var(--border-faint);
+    position: sticky;
+    top: 0;
+    z-index: 2;
+  }
+  .avail-table th.col-mod {
+    text-align: left;
+    padding-left: 14px;
+    min-width: 130px;
+  }
+  .avail-table th.col-day {
+    min-width: 60px;
+    cursor: pointer;
+    user-select: none;
+    transition: background 0.15s;
+  }
+  .avail-table th.col-day:hover {
+    background: var(--ink-100);
+  }
+  .avail-table td {
+    border: 1px solid var(--border-faint);
+    padding: 0;
+  }
+  .avail-table td.cell-mod {
+    padding: 6px 6px 6px 14px;
+    background: var(--surface-card);
+    vertical-align: middle;
+  }
+  .cell-mod-name { font-size: 12px; font-weight: 600; color: var(--text-primary); }
+  .cell-mod-time { font-size: 10px; color: var(--text-muted); }
+
+  /* ─── CHECKBOX CELLS ──────────────────────── */
+  .check-cell {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 44px;
+    cursor: pointer;
+    transition: background 0.1s;
+    position: relative;
+  }
+  .check-cell:hover { background: var(--ink-50); }
+  .check-cell input {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+  }
+  .check-mark {
+    width: 22px;
+    height: 22px;
+    border-radius: 5px;
+    border: 1.5px solid var(--border-subtle);
+    background: var(--surface-card);
+    transition: all 0.15s var(--ease-out);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .check-cell input:checked + .check-mark {
+    background: var(--ink-600);
+    border-color: var(--ink-600);
+  }
+  .check-cell input:checked + .check-mark::after {
+    content: '';
+    width: 6px;
+    height: 10px;
+    border: solid #fff;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg) translate(-1px, -1px);
+  }
+  .check-cell input:focus-visible + .check-mark {
+    box-shadow: 0 0 0 3px rgba(112,104,204,0.2);
+  }
+
+  /* Row select-all */
+  .row-select-all td {
+    background: var(--ink-50);
+  }
+  .row-select-all .cell-mod {
+    background: var(--ink-50);
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--ink-600);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  /* ─── COUNTER ─────────────────────────────── */
+  .slot-counter {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 20px;
+    background: var(--surface-card);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-md);
+    margin-bottom: 24px;
+    box-shadow: var(--shadow-sm);
+  }
+  .slot-counter-label {
+    font-size: 13px;
+    color: var(--text-secondary);
+  }
+  .slot-counter-value {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--ink-600);
+  }
+  .slot-counter-value span {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-muted);
+  }
+
+  /* ─── SUBMIT ──────────────────────────────── */
+  .submit-row {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+  .btn-submit {
+    font-family: var(--font-body);
+    font-size: 14px;
+    font-weight: 600;
+    padding: 12px 36px;
+    border: none;
+    border-radius: var(--radius-md);
+    background: var(--ink-700);
+    color: #fff;
+    cursor: pointer;
+    transition: background 0.15s, transform 0.1s;
+    letter-spacing: 0.02em;
+  }
+  .btn-submit:hover { background: var(--ink-600); }
+  .btn-submit:active { transform: scale(0.98); }
+  .btn-submit:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+  }
+  .btn-reset {
+    font-family: var(--font-body);
+    font-size: 13px;
+    font-weight: 500;
+    padding: 10px 20px;
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-md);
+    background: var(--surface-card);
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: border-color 0.15s, color 0.15s;
+  }
+  .btn-reset:hover { border-color: var(--ink-300); color: var(--ink-600); }
+
+  .submit-msg {
+    font-size: 13px;
+    padding: 8px 16px;
+    border-radius: var(--radius-sm);
+    display: none;
+    animation: fadeIn 0.3s var(--ease-out);
+  }
+  .submit-msg.success {
+    display: block;
+    background: var(--mint-50);
+    color: var(--mint-600);
+    border: 1px solid var(--mint-100);
+  }
+  .submit-msg.error {
+    display: block;
+    background: var(--ember-50);
+    color: var(--ember-600);
+    border: 1px solid var(--ember-100);
+  }
+
+  /* ─── SETUP BANNER ────────────────────────── */
+  .setup-banner {
+    background: var(--ember-50);
+    border: 1px solid var(--ember-100);
+    border-radius: var(--radius-md);
+    padding: 16px 20px;
+    margin-bottom: 28px;
+    font-size: 13px;
+    color: var(--ember-600);
+    line-height: 1.7;
+  }
+  .setup-banner b { color: var(--ink-950); }
+  .setup-banner code {
+    background: rgba(0,0,0,0.06);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 12px;
+  }
+
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: translateY(0); } }
+
+  @media (max-width: 600px) {
+    .field-group { grid-template-columns: 1fr; }
+    .container { padding: 20px 12px 48px; }
+  }
+</style>
+</head>
+<body>
+
+<header class="header">
+  <h1>Disponibilidad Docente</h1>
+  <span class="header-tag">Formulario</span>
+</header>
+
+<div class="container">
+
+  <div class="intro">
+    <h2>Informe su disponibilidad semanal</h2>
+    <p>Seleccione los módulos horarios en los que puede impartir clases. Puede marcar tantos como desee por cada día de la semana.</p>
+  </div>
+
+  <!-- Setup banner: visible until APPS_SCRIPT_URL is configured -->
+  <div class="setup-banner" id="setup-banner">
+    <b>⚙️ Configuración pendiente:</b> Este formulario necesita conectarse a Google Sheets.
+    Sigue los pasos en el archivo <code>SETUP.md</code> para crear el Google Apps Script
+    y luego reemplaza la URL en la variable <code>APPS_SCRIPT_URL</code> al inicio del bloque <code>&lt;script&gt;</code>.
+  </div>
+
+  <!-- Identity -->
+  <div class="field-group">
+    <div class="field">
+      <label>Nombre completo <span class="req">*</span></label>
+      <input type="text" id="f-nombre" placeholder="Ej: Ana González" autocomplete="name" required>
+    </div>
+    <div class="field">
+      <label>Asignatura / Área <span class="req">*</span></label>
+      <input type="text" id="f-asignatura" placeholder="Ej: Matemáticas" required>
+    </div>
+  </div>
+  <div class="field-group">
+    <div class="field">
+      <label>Email institucional <span class="req">*</span></label>
+      <input type="email" id="f-email" placeholder="nombre@uai.cl" autocomplete="email" required>
+    </div>
+    <div class="field">
+      <label>Programa</label>
+      <select id="f-programa">
+        <option value="">— Seleccionar —</option>
+        <option>MBA</option>
+        <option>MDF</option>
+        <option>MDP</option>
+        <option>MGN</option>
+        <option>MNS</option>
+        <option>MSCM</option>
+        <option>MIMM</option>
+        <option>Otro</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Availability Grid -->
+  <div class="grid-section">
+    <div class="grid-section-title">Disponibilidad por módulo y día</div>
+    <div class="grid-section-desc">Haga clic en las celdas para marcar. Use la fila "Todo" para seleccionar/deseleccionar columnas completas.</div>
+
+    <div class="avail-grid">
+      <table class="avail-table" id="avail-table">
+        <thead id="avail-head"></thead>
+        <tbody id="avail-body"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Slot counter -->
+  <div class="slot-counter">
+    <span class="slot-counter-label">Módulos seleccionados</span>
+    <span class="slot-counter-value" id="slot-count">0 <span>/ 54</span></span>
+  </div>
+
+  <!-- Submit -->
+  <div class="submit-row">
+    <button class="btn-submit" id="btn-submit">Enviar disponibilidad</button>
+    <button class="btn-reset" id="btn-reset">Limpiar todo</button>
+    <div class="submit-msg" id="submit-msg"></div>
+  </div>
+
+</div>
+
+<script>
+/**
+ * ═══════════════════════════════════════════════════════════════════
+ * FORMULARIO DE DISPONIBILIDAD DOCENTE
+ * ═══════════════════════════════════════════════════════════════════
+ *
+ * Envía datos a Google Sheets mediante Google Apps Script (web app).
+ *
+ * SETUP:
+ *   1. Crear Google Sheet con encabezados (ver SETUP.md)
+ *   2. Crear Apps Script con doPost() (ver SETUP.md)
+ *   3. Publicar como web app
+ *   4. Pegar la URL aquí abajo
+ */
+
+// ══════════════════════════════════════════════════════════════════
+// ⚠️  REEMPLAZAR CON TU URL DE GOOGLE APPS SCRIPT
+// ══════════════════════════════════════════════════════════════════
+const APPS_SCRIPT_URL = '';
+// Ejemplo: 'https://script.google.com/macros/s/AKfyc.../exec'
+// ══════════════════════════════════════════════════════════════════
+
+
+const DIAS = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
+const MODULOS = [
+  { id: 'M1',  nombre: 'Módulo 1',  hora: '08:30 – 09:40' },
+  { id: 'M2',  nombre: 'Módulo 2',  hora: '10:00 – 11:10' },
+  { id: 'M3',  nombre: 'Módulo 3',  hora: '11:30 – 12:40' },
+  { id: 'M4A', nombre: 'Módulo 4A', hora: '13:00 – 14:10' },
+  { id: 'M4B', nombre: 'Módulo 4B', hora: '13:30 – 14:40' },
+  { id: 'M5',  nombre: 'Módulo 5',  hora: '15:00 – 16:10' },
+  { id: 'M6',  nombre: 'Módulo 6',  hora: '16:30 – 17:40' },
+  { id: 'M7',  nombre: 'Módulo 7',  hora: '18:00 – 19:10' },
+  { id: 'M8',  nombre: 'Módulo 8',  hora: '19:30 – 20:40' },
+];
+
+// ── Hide setup banner if URL is configured ──────────────────────
+if (APPS_SCRIPT_URL) {
+  document.getElementById('setup-banner').style.display = 'none';
+}
+
+// ── Build Grid ──────────────────────────────────────────────────
+const thead = document.getElementById('avail-head');
+const tbody = document.getElementById('avail-body');
+
+// Header row
+thead.innerHTML = '<tr><th class="col-mod">Módulo</th>' +
+  DIAS.map((d, di) =>
+    `<th class="col-day" data-di="${di}" title="Clic para seleccionar/deseleccionar todo ${d}">${d.slice(0,3)}</th>`
+  ).join('') + '</tr>';
+
+// Module rows
+MODULOS.forEach((mod, mi) => {
+  const tr = document.createElement('tr');
+  tr.innerHTML =
+    `<td class="cell-mod">
+      <div class="cell-mod-name">${mod.nombre}</div>
+      <div class="cell-mod-time">${mod.hora}</div>
+    </td>` +
+    DIAS.map((_, di) =>
+      `<td>
+        <label class="check-cell">
+          <input type="checkbox" data-mi="${mi}" data-di="${di}">
+          <span class="check-mark"></span>
+        </label>
+      </td>`
+    ).join('');
+  tbody.appendChild(tr);
+});
+
+// "Select all" row
+const trAll = document.createElement('tr');
+trAll.className = 'row-select-all';
+trAll.innerHTML =
+  '<td class="cell-mod">Todo</td>' +
+  DIAS.map((_, di) =>
+    `<td>
+      <label class="check-cell">
+        <input type="checkbox" data-all-di="${di}">
+        <span class="check-mark"></span>
+      </label>
+    </td>`
+  ).join('');
+tbody.appendChild(trAll);
+
+
+// ── Slot Counter ────────────────────────────────────────────────
+const slotCountEl = document.getElementById('slot-count');
+const totalPossible = DIAS.length * MODULOS.length;
+
+function updateCount() {
+  const checked = tbody.querySelectorAll('input[data-mi]:checked').length;
+  slotCountEl.innerHTML = `${checked} <span>/ ${totalPossible}</span>`;
+}
+
+// ── Event Delegation ────────────────────────────────────────────
+tbody.addEventListener('change', function (e) {
+  const input = e.target;
+
+  // "Select all" column toggle
+  if (input.dataset.allDi !== undefined) {
+    const di = input.dataset.allDi;
+    const checked = input.checked;
+    tbody.querySelectorAll(`input[data-di="${di}"]`).forEach(cb => {
+      if (cb.dataset.mi !== undefined) cb.checked = checked;
+    });
+  }
+
+  updateCount();
+});
+
+// Column header click → toggle entire day
+thead.addEventListener('click', function (e) {
+  const th = e.target.closest('.col-day');
+  if (!th) return;
+  const di = th.dataset.di;
+  const boxes = tbody.querySelectorAll(`input[data-di="${di}"][data-mi]`);
+  const allChecked = [...boxes].every(cb => cb.checked);
+  boxes.forEach(cb => cb.checked = !allChecked);
+  // Sync the "select all" row
+  const allToggle = tbody.querySelector(`input[data-all-di="${di}"]`);
+  if (allToggle) allToggle.checked = !allChecked;
+  updateCount();
+});
+
+
+// ── Form Submission ─────────────────────────────────────────────
+const btnSubmit = document.getElementById('btn-submit');
+const btnReset = document.getElementById('btn-reset');
+const msgEl = document.getElementById('submit-msg');
+
+function showMsg(text, type) {
+  msgEl.textContent = text;
+  msgEl.className = 'submit-msg ' + type;
+  if (type === 'success') {
+    setTimeout(() => { msgEl.className = 'submit-msg'; }, 6000);
+  }
+}
+
+function getFormData() {
+  const nombre = document.getElementById('f-nombre').value.trim();
+  const asignatura = document.getElementById('f-asignatura').value.trim();
+  const email = document.getElementById('f-email').value.trim();
+  const programa = document.getElementById('f-programa').value;
+
+  // Validation
+  let valid = true;
+  ['f-nombre', 'f-asignatura', 'f-email'].forEach(id => {
+    const el = document.getElementById(id);
+    if (!el.value.trim()) {
+      el.classList.add('invalid');
+      valid = false;
+    } else {
+      el.classList.remove('invalid');
+    }
+  });
+
+  if (!valid) return null;
+
+  // Build availability matrix
+  const disponibilidad = {};
+  DIAS.forEach((dia, di) => {
+    disponibilidad[dia] = MODULOS.map((_, mi) => {
+      const cb = tbody.querySelector(`input[data-mi="${mi}"][data-di="${di}"]`);
+      return cb ? cb.checked : false;
+    });
+  });
+
+  return {
+    timestamp: new Date().toISOString(),
+    nombre,
+    asignatura,
+    email,
+    programa,
+    disponibilidad,
+  };
+}
+
+btnSubmit.addEventListener('click', async () => {
+  const data = getFormData();
+  if (!data) {
+    showMsg('Complete los campos obligatorios.', 'error');
+    return;
+  }
+
+  if (!APPS_SCRIPT_URL) {
+    showMsg('⚠️ APPS_SCRIPT_URL no configurada. Revisa SETUP.md', 'error');
+    console.log('Datos que se enviarían:', JSON.stringify(data, null, 2));
+    return;
+  }
+
+  btnSubmit.disabled = true;
+  btnSubmit.textContent = 'Enviando…';
+  msgEl.className = 'submit-msg';
+
+  try {
+    const response = await fetch(APPS_SCRIPT_URL, {
+      method: 'POST',
+      mode: 'no-cors', // Apps Script requires no-cors from browser
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data),
+    });
+
+    // no-cors returns opaque response; we assume success
+    showMsg('✓ Disponibilidad enviada correctamente. ¡Gracias!', 'success');
+
+    // Reset form
+    setTimeout(() => {
+      resetForm();
+    }, 2000);
+
+  } catch (err) {
+    console.error('Error al enviar:', err);
+    showMsg('Error al enviar. Intente nuevamente.', 'error');
+  } finally {
+    btnSubmit.disabled = false;
+    btnSubmit.textContent = 'Enviar disponibilidad';
+  }
+});
+
+function resetForm() {
+  document.getElementById('f-nombre').value = '';
+  document.getElementById('f-asignatura').value = '';
+  document.getElementById('f-email').value = '';
+  document.getElementById('f-programa').value = '';
+  tbody.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
+  ['f-nombre', 'f-asignatura', 'f-email'].forEach(id =>
+    document.getElementById(id).classList.remove('invalid'));
+  updateCount();
+}
+
+btnReset.addEventListener('click', resetForm);
+
+// ── Prevent enter key submitting accidentally ────────────────────
+document.querySelectorAll('.field input').forEach(el => {
+  el.addEventListener('keydown', e => {
+    if (e.key === 'Enter') e.preventDefault();
+  });
+});
+
+</script>
+</body>
+</html>
